@@ -1,0 +1,15 @@
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /usr/src/app
+
+COPY go.* ./
+RUN go get -d -v ./...
+
+COPY *.go ./
+RUN go build -v -o /usr/local/bin/app ./...
+
+FROM scratch
+WORKDIR /usr/src/app
+COPY --from=builder /usr/local/bin/app /usr/local/bin/app
+
+ENTRYPOINT ["/usr/local/bin/app"]
